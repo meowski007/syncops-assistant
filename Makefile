@@ -1,4 +1,4 @@
-.PHONY: setup seed test test-cov api dashboard slack-mock smoke docker-up docker-down clean
+.PHONY: setup seed reset-data test test-cov api dashboard frontend frontend-build pipeline train-forecast rag-eval slack-mock smoke docker-up docker-down clean
 
 PYTHON ?= .venv/bin/python
 PIP ?= .venv/bin/pip
@@ -11,6 +11,8 @@ setup:
 	$(PIP) install --upgrade pip
 	$(PIP) install -r requirements.txt
 	$(PYTHON) scripts/seed_data.py
+	$(PYTHON) -m pipeline.run
+	$(PYTHON) -m forecasting.train
 
 seed:
 	$(PYTHON) scripts/seed_data.py
@@ -18,17 +20,32 @@ seed:
 reset-data:
 	$(PYTHON) scripts/seed_data.py --reset
 
+pipeline:
+	$(PYTHON) -m pipeline.run
+
+train-forecast:
+	$(PYTHON) -m forecasting.train
+
+rag-eval:
+	$(PYTHON) -m evaluation.rag_evaluator
+
 test:
 	$(PYTEST) -v
 
 test-cov:
-	$(PYTEST) --cov=app --cov-report=term-missing
+	$(PYTEST) --cov=app --cov=pipeline --cov=forecasting --cov-report=term-missing
 
 api:
 	$(UVICORN) app.main:app --reload --port 8000
 
 dashboard:
 	$(STREAMLIT) run dashboard/app.py --server.port 8501
+
+frontend:
+	cd frontend && npm run dev
+
+frontend-build:
+	cd frontend && npm run build
 
 slack-mock:
 	$(PYTHON) -m app.slack.mock

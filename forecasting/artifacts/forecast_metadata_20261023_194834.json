@@ -1,0 +1,130 @@
+{
+  "version": "v_20261023_194834",
+  "created_at": "2026-10-23T19:48:34.570912+00:00",
+  "horizon_days": 3,
+  "failure_rate": {
+    "selected_model": "exponential_smoothing",
+    "validation_metrics": {
+      "mae": 0.968,
+      "rmse": 1.068,
+      "smape": 16.1,
+      "evaluated_points": 6,
+      "origins_count": 2,
+      "horizon": 3,
+      "eval_window_start": "2026-10-19",
+      "eval_window_end": "2026-10-22"
+    },
+    "all_models_compared": {
+      "naive": {
+        "mae": 1.098,
+        "rmse": 1.407,
+        "smape": 19.52,
+        "evaluated_points": 6,
+        "origins_count": 2,
+        "horizon": 3,
+        "eval_window_start": "2026-10-19",
+        "eval_window_end": "2026-10-22"
+      },
+      "seasonal_naive": {
+        "mae": 1.098,
+        "rmse": 1.407,
+        "smape": 19.52,
+        "evaluated_points": 6,
+        "origins_count": 2,
+        "horizon": 3,
+        "eval_window_start": "2026-10-19",
+        "eval_window_end": "2026-10-22"
+      },
+      "exponential_smoothing": {
+        "mae": 0.968,
+        "rmse": 1.068,
+        "smape": 16.1,
+        "evaluated_points": 6,
+        "origins_count": 2,
+        "horizon": 3,
+        "eval_window_start": "2026-10-19",
+        "eval_window_end": "2026-10-22"
+      }
+    },
+    "training_history_length": 8,
+    "last_observed_value": 5.21,
+    "forecast_point": [
+      6.57,
+      6.98,
+      7.39
+    ],
+    "forecast_lower": [
+      5.42,
+      5.36,
+      5.4
+    ],
+    "forecast_upper": [
+      8.07,
+      9.1,
+      9.99
+    ]
+  },
+  "incident_volume": {
+    "selected_model": "naive",
+    "validation_metrics": {
+      "mae": 1.0,
+      "rmse": 1.0,
+      "smape": 200.0,
+      "evaluated_points": 3,
+      "origins_count": 1,
+      "horizon": 3,
+      "eval_window_start": "2026-10-20",
+      "eval_window_end": "2026-10-22"
+    },
+    "all_models_compared": {
+      "naive": {
+        "mae": 1.0,
+        "rmse": 1.0,
+        "smape": 200.0,
+        "evaluated_points": 3,
+        "origins_count": 1,
+        "horizon": 3,
+        "eval_window_start": "2026-10-20",
+        "eval_window_end": "2026-10-22"
+      },
+      "seasonal_naive": {
+        "mae": 1.0,
+        "rmse": 1.0,
+        "smape": 200.0,
+        "evaluated_points": 3,
+        "origins_count": 1,
+        "horizon": 3,
+        "eval_window_start": "2026-10-20",
+        "eval_window_end": "2026-10-22"
+      },
+      "exponential_smoothing": {
+        "mae": 1.833,
+        "rmse": 1.878,
+        "smape": 200.0,
+        "evaluated_points": 3,
+        "origins_count": 1,
+        "horizon": 3,
+        "eval_window_start": "2026-10-20",
+        "eval_window_end": "2026-10-22"
+      }
+    },
+    "training_history_length": 6,
+    "last_observed_value": 1.0,
+    "forecast_point": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "forecast_lower": [
+      0.1,
+      0.0,
+      0.0
+    ],
+    "forecast_upper": [
+      1.9,
+      2.27,
+      2.56
+    ]
+  },
+  "disclosure": "SYNTHETIC_DATA_METHODOLOGY_DEMONSTRATION"
+}

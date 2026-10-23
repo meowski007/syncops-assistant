@@ -103,6 +103,12 @@ def run_smoke_tests():
             log_test("In-Process GET /incidents", r3.status_code == 200)
             r4 = client.get("/metrics")
             log_test("In-Process GET /metrics", r4.status_code == 200 and "syncops_http_requests_total" in r4.text)
+            r5 = client.get("/data-quality")
+            log_test("In-Process GET /data-quality", r5.status_code == 200 and "status" in r5.json())
+            r6 = client.get("/forecast?target=failure_rate&horizon=7")
+            log_test("In-Process GET /forecast", r6.status_code == 200 and len(r6.json()["forecast"]) == 7)
+            r7 = client.post("/triage/rag", json={"query": "How to resolve payload timeouts?"})
+            log_test("In-Process POST /triage/rag", r7.status_code == 200 and len(r7.json()["citations"]) > 0)
 
     print("\n" + "=" * 65)
     print("ALL SMOKE TESTS PASSED CLEANLY!")

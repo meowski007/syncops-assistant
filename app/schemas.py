@@ -75,3 +75,54 @@ class TriageResult(BaseModel):
     requires_human_review: bool = True
     analysis_mode: str = Field(..., description="'llm_tool_calling' or 'deterministic_fallback'")
     disclaimer: str = "Advisory AI analysis over synthetic data. Human operator verification required."
+
+# ==============================================================================
+# RAG Triage Schemas (Upgrade 4)
+# ==============================================================================
+class RagTriageRequest(BaseModel):
+    incident_id: str | None = Field(default=None, description="Optional target incident ID, e.g. INC-2026-1001")
+    query: str | None = Field(default=None, description="Operational question or diagnostic query")
+    min_score: float = Field(default=0.08, ge=0.0, le=1.0, description="Relevance cutoff threshold")
+    top_k: int = Field(default=3, ge=1, le=10, description="Max runbook chunks to retrieve")
+
+# ==============================================================================
+# Forecasting Schemas (Upgrade 3)
+# ==============================================================================
+class ForecastPoint(BaseModel):
+    date: str
+    point_forecast: float
+    lower_bound: float
+    upper_bound: float
+
+class ForecastHistoryPoint(BaseModel):
+    date: str
+    value: float
+
+class ForecastResponse(BaseModel):
+    target: str
+    target_label: str
+    unit: str
+    status: str
+    model_name: str
+    horizon_days: int
+    historical: list[ForecastHistoryPoint]
+    forecast: list[ForecastPoint]
+    metrics: dict[str, Any] = Field(default_factory=dict)
+    drift_monitoring: dict[str, Any] = Field(default_factory=dict)
+    disclaimer: str = "ALL TELEMETRY IS SYNTHETIC FOR EDUCATIONAL EVALUATION"
+
+# ==============================================================================
+# Data Quality Schemas (Upgrade 2)
+# ==============================================================================
+class DataQualitySummary(BaseModel):
+    status: str
+    last_run_id: str | None = None
+    created_at: str | None = None
+    total_records: int = 0
+    accepted_records: int = 0
+    rejected_records: int = 0
+    warning_count: int = 0
+    rejection_breakdown: dict[str, int] = Field(default_factory=dict)
+    warning_breakdown: dict[str, int] = Field(default_factory=dict)
+    report_markdown_path: str | None = None
+    disclaimer: str = "SYNTHETIC_DATA_GOVERNANCE_METRICS"

@@ -1,157 +1,202 @@
 # SyncOps Assistant: System Architecture & Technical Design
 
-> **SYNTHETIC DISCLOSURE:** SyncOps Assistant is an independent educational SRE and customer-experience reliability platform. All data, telemetry, and incident scenarios are deterministically generated. No connection or affiliation with Apple or any other enterprise is claimed or implied.
+> **SYNTHETIC DISCLOSURE:** SyncOps Assistant is an independent educational SRE, Data Engineering, and AI Reliability platform. All data, telemetry, customer profiles, and incident scenarios are deterministically generated. No connection or affiliation with Apple or any other commercial enterprise is claimed or implied.
 
 ---
 
 ## 1. High-Level System Architecture
 
-SyncOps Assistant connects synthetic client telemetry, incident tracking, REST API services, an interactive dashboard, and an autonomous LLM triage agent with deterministic fallback:
+SyncOps Assistant connects end-to-end telemetry ingestion, an idempotent ETL data pipeline, data governance and PII masking, chronological time-series forecasting, an autonomous grounded RAG triage agent, Prometheus observability, and dual operator interfaces (Streamlit + Vite React):
 
 ```mermaid
 flowchart TD
-    subgraph Data Layer ["Data & Persistence Layer"]
-        DB[("SQLite Store<br/>(Deterministic Synthetic Data)")]
-        RB["Markdown Runbooks Catalog<br/>(runbooks/*.md)"]
+    subgraph Ingestion ["1. Data Ingestion & Governance Layer"]
+        RAW[("Raw Landing Zone<br/>(raw_sync_events)")]
+        DQ["Data Quality Gate<br/>(Schema, Bounds, Timestamps)"]
+        MASK["PII Masking Engine<br/>(HMAC-SHA256 Salted Hashes)"]
+        DLQ[("Dead-Letter Quarantine<br/>(pipeline_dead_letter)")]
+        CLEAN[("Clean Analytical Store<br/>(clean_sync_events)")]
+        AUDIT[("Governance Audit Log<br/>(pipeline_runs, dq_audit)")]
     end
 
-    subgraph Service Layer ["FastAPI Core Services (:8000)"]
-        API["FastAPI Ingestion & Query Router"]
-        MID["Observability Middleware<br/>(Request ID, Latency & JSON Logging)"]
+    subgraph Service Layer ["2. FastAPI Core Services (:8000)"]
+        API["FastAPI REST Router"]
+        MID["Observability Middleware<br/>(Trace ID, Latency & JSON Logging)"]
         KPI["KPI Engine<br/>(7 CX Reliability Metrics)"]
-        INC["Incident & Cohort Service"]
+        INC["Incident Correlation Service"]
         PROM["Prometheus Exporter (/metrics)"]
+        DQ_EP["Data Quality API (/data-quality)"]
+        FC_EP["Forecasting API (/forecast)"]
+        RAG_EP["Grounded RAG API (/triage/rag)"]
     end
 
-    subgraph Triage Engine ["Autonomous Triage Engine"]
-        TRI["Triage Orchestrator"]
-        LLM["LLM Tool-Calling Agent<br/>(OpenAI SDK)"]
-        FALLBACK["Deterministic Fallback Engine<br/>(Zero-Credential SRE Rules)"]
-        TOOLS["Callable Tools<br/>• get_incident_details()<br/>• search_and_read_runbook()"]
+    subgraph Intelligence ["3. Forecasting & Grounded RAG Engines"]
+        subgraph TS ["Time-Series Forecasting Engine"]
+            WF["Walk-Forward Validator<br/>(Zero Future Leakage)"]
+            HW["Holt-Winters Exp Smoothing"]
+            SN["Seasonal Naive Baseline"]
+            NV["Naive Drift Baseline"]
+            DRIFT["Drift Detector (MAE/Residuals)"]
+        end
+        subgraph RAG ["Grounded RAG Knowledge Engine"]
+            CHUNK["Section-Aware Markdown Chunker"]
+            VEC["Sublinear TF-IDF Vectorizer<br/>(Cosine Similarity Scoring)"]
+            GUARD["Low-Relevance Guardrails<br/>(Refusal Threshold < 0.12)"]
+            CITE["Citation & Provenance Engine"]
+        end
     end
 
-    subgraph Client & Consumer Layer ["Operator Interfaces"]
-        DASH["Streamlit & Plotly Dashboard (:8501)"]
+    subgraph Interfaces ["4. Dual Operator & Consumer Layer"]
+        REACT["Vite + React 18 SPA (:5173)<br/>(Typed Client, Live Forecasts, Triage)"]
+        STREAMLIT["Streamlit Dashboard (:8501)<br/>(Multi-Tab Observability)"]
         SLACK_REAL["Slack Bolt Bot (Socket Mode)"]
-        SLACK_MOCK["Local Mock Slack Runner<br/>(Zero Credentials CLI)"]
-        PROMETHEUS["Prometheus Scraper"]
+        SLACK_MOCK["Slack Mock Runner (CLI)"]
+        PROMETHEUS["Prometheus & Grafana Scraper"]
     end
 
-    DB --> KPI
-    DB --> INC
+    RAW --> DQ
+    DQ -->|Valid Records| MASK
+    DQ -->|Failed Records| DLQ
+    MASK --> CLEAN
+    DQ --> AUDIT
+
+    CLEAN --> KPI
+    CLEAN --> INC
+    CLEAN --> TS
+
     MID --> API
     API --> KPI
     API --> INC
+    API --> DQ_EP
+    API --> FC_EP
+    API --> RAG_EP
     API --> PROM
-    API --> TRI
 
-    TRI --> LLM
-    TRI --> FALLBACK
-    LLM --> TOOLS
-    FALLBACK --> TOOLS
-    TOOLS --> DB
-    TOOLS --> RB
+    DQ_EP --> AUDIT
+    FC_EP --> TS
+    RAG_EP --> RAG
 
-    API --> DASH
+    API --> REACT
+    API --> STREAMLIT
     API --> SLACK_REAL
-    DB --> SLACK_MOCK
+    CLEAN --> SLACK_MOCK
     PROM --> PROMETHEUS
 ```
 
 ---
 
-## 2. Component Design & Responsibilities
+## 2. End-to-End Data Pipeline & Lineage
 
-### 2.1 Synthetic Persistence Layer (`app/database.py`, `scripts/seed_data.py`)
-- **Engine:** SQLite 3 with parameterized queries, WAL mode capability, foreign keys enforced (`PRAGMA foreign_keys = ON;`), and connection pooling via context managers.
-- **Tables:**
-  - `customers`: Client cohort assignments (`iOS-Production`, `Android-v3`, etc.), app versions, hardware models.
-  - `sync_events`: 5,000+ granular sync attempts with duration, bytes, retry count, status, and failure category.
-  - `incidents`: Severity (`SEV1`-`SEV4`), lifecycle status (`DETECTED`, `INVESTIGATING`, `MITIGATED`, `RESOLVED`), start/recovery timestamps, and cohort bindings.
-  - `support_tickets`: Escalated customer tickets, resolution times, and self-service flags.
-  - `adoption_records`: 30-day daily active users (DAU) and sync feature adoption counts.
-- **Indexing Strategy:** B-tree indexes on `timestamp`, `status`, `customer_id`, `incident_id`, and `failure_category` guarantee sub-5ms query performance.
+The data pipeline enforces strict isolation between raw landing data, validated analytical records, and quarantined dead-letter records:
 
-### 2.2 FastAPI REST Service Layer (`app/main.py`)
-- Single source of truth for both the UI dashboard and automation bots.
-- Strict request and response serialization with Pydantic v2 schemas.
-- Non-blocking asynchronous middleware tracking HTTP request latency, status counts, and generating distributed trace request IDs (`X-Request-ID`).
-- Endpoints:
-  - `GET /health`: Database health and table record counts.
-  - `GET /kpis`: Calculation of all 7 customer-experience reliability metrics.
-  - `GET /incidents`: Queryable incident repository with validated severity, status, and pagination filters.
-  - `GET /incidents/{incident_id}`: Detailed incident view with correlated cohort telemetry.
-  - `POST /triage`: Autonomous SRE triage execution.
-  - `GET /metrics`: Standard Prometheus metrics exposition format.
+```
+[External Devices / Synthetic Generator]
+                │
+                ▼
+      raw_sync_events (Landing Layer)
+                │
+                ▼
+   pipeline/validate.py (Data Quality Gate)
+        ├── Failure ──► pipeline_dead_letter (Quarantine Layer)
+        │
+        └── Pass ────► pipeline/transform.py (HMAC-SHA256 PII Masking)
+                              │
+                              ▼
+                     clean_sync_events (Clean Analytical Store)
+                              │
+               ┌──────────────┴──────────────┐
+               ▼                             ▼
+       app/kpis.py (7 CX KPIs)      forecasting/ (Time-Series Engine)
+```
 
-### 2.3 Streamlit & Plotly Operator Dashboard (`dashboard/app.py`)
-- Real-time SRE monitoring interface querying the FastAPI backend via HTTP.
-- Metric cards showing SLO deltas, sample sizes, and plain-English business context.
-- Plotly charts displaying failure category distributions and severity breakdowns.
-- Interactive incident drill-down enabling operators to trigger on-demand triage and view correlated runbook recommendations.
-
-### 2.4 Autonomous Triage Engine (`app/triage/`)
-- Executes the standard SRE triage framework: **Detect → Explain → Recover → Confirm**.
-- **Real Tool-Calling Architecture:**
-  1. `get_incident_details(incident_id)`: Fetches incident record, cohort failure percentage, latency, and customer tickets.
-  2. `search_and_read_runbook(query_or_filename)`: Discovers and parses Markdown runbooks from `runbooks/`.
-- **Hybrid Execution Flow:**
-  - **Online Mode:** When `OPENAI_API_KEY` is provided, an OpenAI-compatible model iteratively invokes tools, receives real database and runbook outputs, and compiles a structured Pydantic assessment.
-  - **Offline Deterministic Fallback Mode:** When API keys are absent, network fails, or fallback is forced, a rule-based SRE engine executes the exact same tools and correlates findings deterministically. Zero hallucination risk, completely offline, and reproducible.
-
-### 2.5 Slack Integration Layer (`app/slack/`)
-- **Production Mode (`bot.py`):** Slack Bolt for Python with Socket Mode listener, handling `/syncstatus`, `/incidents`, and `@SyncOps` mentions.
-- **Mock Mode (`mock.py`):** Simulates all slash commands, app mentions, and threshold alert checks locally without network access, credentials, or paid workspaces.
+### Table Specifications:
+- `raw_sync_events`: Immutable append-only landing zone. Captures payload size, latency, error strings, and device metadata.
+- `clean_sync_events`: Analytical source of truth. Enforces deduplication via `fingerprint`, masks `customer_id` and `device_id` into cryptographic tokens (`cust_...`, `dev_...`), and guarantees non-negative latencies and valid status enums.
+- `pipeline_dead_letter`: Records quarantined due to blocking data quality checks (e.g., negative duration, invalid status, missing customer identifier, future timestamps).
+- `pipeline_runs`: Operational metadata recording run timestamp, record counts (total, accepted, rejected, duplicates skipped), and execution duration.
+- `pipeline_dq_audit`: Individual validation check results, severity (`BLOCKING` vs `WARNING`), and pass/fail status.
 
 ---
 
-## 3. End-to-End Incident Triage Flow
+## 3. Time-Series Forecasting Architecture
+
+### 3.1 Validation Strategy
+To avoid lookahead bias and temporal leakage, we evaluate models using **chronological walk-forward validation** (rolling origin):
+- **Split:** Day $t$ is predicted using historical data strictly from days $[1, t-1]$.
+- **Metrics Tracked:**
+  - Mean Absolute Error ($\text{MAE} = \frac{1}{n} \sum |y_t - \hat{y}_t|$)
+  - Root Mean Squared Error ($\text{RMSE} = \sqrt{\frac{1}{n} \sum (y_t - \hat{y}_t)^2}$)
+  - Symmetric Mean Absolute Percentage Error ($\text{sMAPE} = \frac{100\%}{n} \sum \frac{2|y_t - \hat{y}_t|}{|y_t| + |\hat{y}_t| + \epsilon}$)
+
+### 3.2 Candidate Models
+1. **Holt-Winters Exponential Smoothing:** Captures level smoothing ($\alpha$), trend smoothing ($\beta$), and damped or additive trends using statsmodels.
+2. **Seasonal Naive Baseline (7-Day):** Projects the exact value from the same day of the prior week ($\hat{y}_{t+h} = y_{t+h-7}$).
+3. **Naive Baseline (Last Value):** Projects the most recent observed value into the horizon ($\hat{y}_{t+h} = y_t$).
+
+### 3.3 Prediction Intervals
+Prediction bounds are derived from empirical in-sample residual variance:
+$$\hat{y}_{t+h} \pm z \cdot \sigma_e \cdot \sqrt{h}$$
+where $z = 1.96$ for the 95% confidence interval, ensuring bounds strictly widen with horizon length $h$ and honor mathematical sanity constraints ($0\% \le \text{failure rate} \le 100\%$, $\text{lower bound} \le \text{point forecast} \le \text{upper bound}$).
+
+---
+
+## 4. Grounded RAG Knowledge Base Architecture
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor SRE as SRE Operator / Slack User
-    participant Dash as Streamlit / Slack Mock
+    actor Operator as SRE / Developer
+    participant Client as React SPA / Streamlit
     participant API as FastAPI REST API
-    participant Agent as Triage Engine
-    participant DB as SQLite Store
-    participant Books as Runbooks Catalog
+    participant RAG as RAG Service (app/triage/rag)
+    participant Corpus as 13 Markdown Runbooks
 
-    SRE->>Dash: Trigger Triage for INC-2026-1001
-    Dash->>API: POST /triage {incident_id: "INC-2026-1001"}
-    API->>Agent: triage_incident("INC-2026-1001")
-    
-    alt API Key Present
-        Agent->>DB: Tool: get_incident_details("INC-2026-1001")
-        DB-->>Agent: Return cohort stats & tickets
-        Agent->>Books: Tool: search_and_read_runbook("PAYLOAD_TIMEOUT")
-        Books-->>Agent: Return mitigation procedures
-        Agent-->>API: Pydantic TriageResult (llm_tool_calling)
-    else Zero-Credential Fallback
-        Agent->>DB: Tool: get_incident_details("INC-2026-1001")
-        DB-->>Agent: Return cohort stats & tickets
-        Agent->>Books: Tool: search_and_read_runbook("PAYLOAD_TIMEOUT")
-        Books-->>Agent: Return mitigation procedures
-        Agent-->>API: Pydantic TriageResult (deterministic_fallback)
+    Operator->>Client: Submit query: "How to resolve payload timeouts?"
+    Client->>API: POST /triage/rag {query, incident_id}
+    API->>RAG: generate_grounded_answer(query, incident_id)
+    RAG->>Corpus: Chunk runbooks by H1/H2/H3 headings
+    RAG->>RAG: Vectorize query & corpus using Sublinear TF-IDF
+    RAG->>RAG: Compute Cosine Similarity scores
+    alt Maximum Cosine Score < 0.12 (Low Relevance)
+        RAG-->>API: Refusal: "I cannot find sufficient guidance in the operational runbooks..."
+    else Grounded Matches Found
+        RAG->>RAG: Extract top-K chunks (top 3)
+        RAG->>RAG: Synthesize empirical facts & mitigation steps
+        RAG->>RAG: Attach exact runbook & section citations
+        RAG-->>API: RagTriageResponse {summary, causes, mitigations, citations, confidence}
     end
-
-    API-->>Dash: HTTP 200 JSON Response
-    Dash-->>SRE: Render Summary, Root Cause & Runbook Actions
+    API-->>Client: HTTP 200 JSON Response
+    Client-->>Operator: Render Markdown answer, citations, and confidence score
 ```
 
+### 4.1 Section-Aware Markdown Chunker (`chunker.py`)
+- Standard character splitters break operational steps across arbitrary sentence boundaries.
+- Our chunker parses Markdown heading tokens (`#`, `##`, `###`), preserving complete procedural sections (e.g., `## Immediate Mitigation Procedures`, `### Escalation Criteria`) within a single chunk.
+- Chunks include rich metadata: `runbook_file`, `section_heading`, `chunk_id`, and character length.
+
+### 4.2 Retrieval & Guardrails (`retriever.py`, `answer.py`)
+- Employs sublinear term-frequency TF-IDF with cosine similarity from `scikit-learn`.
+- Returns genuine cosine similarity scores in range $[0.0, 1.0]$.
+- **Guardrail Enforcement:** Queries scoring below $0.12$ trigger an immediate safety refusal, preventing hallucinated advice on out-of-scope queries (e.g. "How to bake a cake").
+- **Strict Citations:** Every recommended action is directly attributed to its originating runbook file and section heading.
+
 ---
 
-## 4. Failure Handling, Resiliency, & Observability
+## 5. Dual Frontend Architecture
 
-1. **Missing Data & Zero Denominators:** KPI computation guards against division-by-zero, returning descriptive sample size metadata.
-2. **Graceful Fallback:** If the LLM provider fails, times out, or receives rate limits, the system seamlessly drops back to the deterministic SRE engine.
-3. **Bounded Cardinality Metrics:** Prometheus labels are restricted to static strings (`method`, `endpoint`, `status_code`, `mode`). Arbitrary customer IDs or incident IDs are strictly prohibited in metrics.
-4. **Structured JSON Logs:** All request logs contain timestamp, service name, request ID, duration, and status code, facilitating ingestion into Splunk, Datadog, or Grafana Loki.
+1. **Vite + React 18 TypeScript SPA (`frontend/`):**
+   - Built for high responsiveness and modular UI component development.
+   - Fully typed TypeScript API client (`api.ts`).
+   - Components: `KPICards`, `IncidentTable`, `ForecastChart`, `DataQualityPanel`, `TriageChat`.
+   - Served via multi-stage Docker build with Nginx on port 5173.
+2. **Streamlit & Plotly Dashboard (`dashboard/app.py`):**
+   - Rapid observability interface for Python data scientists and SREs.
+   - Tabs: Incidents & Triage, Time-Series Forecasting, Data Quality & Governance, Grounded RAG Assistant.
+   - Direct integration with FastAPI backend on port 8501.
 
 ---
 
-## 5. Security & Isolation Boundaries
+## 6. Observability & SRE Middleware
 
-- **Secret Isolation:** API tokens, Slack keys, and database credentials are read exclusively from environment variables or `.env`. None are hardcoded or committed.
-- **Synthetic Data Isolation:** All customer records use synthetic IDs (`CUST-0001` to `CUST-0300`), eliminating PII/GDPR concerns.
-- **Read-Only Advisory AI:** The LLM triage agent has read-only tools. It cannot modify database records, terminate cloud resources, or alter production code autonomously. Human review is strictly enforced.
+- **Structured JSON Logging:** All incoming requests, background tasks, and triage runs emit machine-readable JSON logs with ISO-8601 timestamps, logger names, latency durations, and unique `X-Request-ID` trace identifiers.
+- **Prometheus Metrics:** Native `/metrics` endpoint exports HTTP traffic counts, latency histograms, error rates, synthetic sync success rate gauges, and triage mode counters. Bounded label cardinality guarantees zero memory leak risk.

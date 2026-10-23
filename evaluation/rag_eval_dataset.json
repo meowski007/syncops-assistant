@@ -1,0 +1,227 @@
+[
+  {
+    "id": "Q01",
+    "question": "How do we handle OAuth token expiration surges and JWKS leaf certificate rotation?",
+    "expected_file": "authentication_errors.md",
+    "expected_section": "Mitigation Steps",
+    "expected_keywords": ["JWKS", "token", "certificate"],
+    "category": "AUTHENTICATION",
+    "purpose": "Verify token rotation runbook retrieval"
+  },
+  {
+    "id": "Q02",
+    "question": "What is the procedure when sync payloads time out after 5,000ms on client batch uploads?",
+    "expected_file": "payload_timeout_guide.md",
+    "expected_section": "Symptoms & Detection",
+    "expected_keywords": ["5,000ms", "timeout", "decompression"],
+    "category": "TIMEOUT",
+    "purpose": "Verify payload timeout diagnosis retrieval"
+  },
+  {
+    "id": "Q03",
+    "question": "How to resolve BLE firmware buffer truncation and MTU negotiation failures on IoT devices?",
+    "expected_file": "firmware_update_failures.md",
+    "expected_section": "Mitigation Steps",
+    "expected_keywords": ["BLE", "firmware", "MTU", "chunk"],
+    "category": "FIRMWARE",
+    "purpose": "Verify IoT device firmware runbook match"
+  },
+  {
+    "id": "Q04",
+    "question": "What mitigation is recommended for client retry storms causing HTTP 429 surges?",
+    "expected_file": "retry_storms.md",
+    "expected_section": "Mitigation Steps",
+    "expected_keywords": ["Retry-After", "jitter", "shedding"],
+    "category": "RETRY_STORM",
+    "purpose": "Verify retry storm rate-limiter retrieval"
+  },
+  {
+    "id": "Q05",
+    "question": "How do we deduplicate synchronization events and handle client UUID collisions?",
+    "expected_file": "duplicate_events.md",
+    "expected_section": "Mitigation Steps",
+    "expected_keywords": ["deduplication", "fingerprint", "UUID"],
+    "category": "DUPLICATES",
+    "purpose": "Verify duplicate event idempotency procedures"
+  },
+  {
+    "id": "Q06",
+    "question": "What steps should be taken when consumer lag exceeds 15 minutes on the ingestion pipeline?",
+    "expected_file": "delayed_event_processing.md",
+    "expected_section": "Mitigation Steps",
+    "expected_keywords": ["consumer lag", "scale", "worker"],
+    "category": "PIPELINE_LAG",
+    "purpose": "Verify consumer worker lag mitigation retrieval"
+  },
+  {
+    "id": "Q07",
+    "question": "How to diagnose SQLite database is locked operational errors and transaction pool starvation?",
+    "expected_file": "database_connection_issues.md",
+    "expected_section": "Mitigation Steps",
+    "expected_keywords": ["WAL", "busy_timeout", "locked"],
+    "category": "DATABASE",
+    "purpose": "Verify database lock recovery retrieval"
+  },
+  {
+    "id": "Q08",
+    "question": "What is the procedure when dead-letter queue rejection records spike beyond 1000 messages?",
+    "expected_file": "queue_backlog.md",
+    "expected_section": "Symptoms & Detection",
+    "expected_keywords": ["dead-letter", "backlog", "queue"],
+    "category": "QUEUE_BACKLOG",
+    "purpose": "Verify dead-letter queue escalation retrieval"
+  },
+  {
+    "id": "Q09",
+    "question": "When three or more SEV1 incidents occur simultaneously, what circuit breakers are activated?",
+    "expected_file": "elevated_incident_volume.md",
+    "expected_section": "Mitigation Steps",
+    "expected_keywords": ["circuit breaker", "cascading", "incident commander"],
+    "category": "CASCADING_FAILURE",
+    "purpose": "Verify cascading failure circuit breaker SOP"
+  },
+  {
+    "id": "Q10",
+    "question": "How do we investigate blocking schema validation failures in the ETL pipeline?",
+    "expected_file": "data_quality_failures.md",
+    "expected_section": "Immediate Diagnostic Checklist",
+    "expected_keywords": ["rejection_breakdown", "schema", "blocking"],
+    "category": "DATA_QUALITY",
+    "purpose": "Verify data quality audit failure retrieval"
+  },
+  {
+    "id": "Q11",
+    "question": "What are the quantitative criteria to escalate an incident to the senior SRE on-call lead?",
+    "expected_file": "escalation_criteria.md",
+    "expected_section": "Quantitative Escalation Triggers",
+    "expected_keywords": ["MTTR > 60", "escalation", "commander"],
+    "category": "ESCALATION",
+    "purpose": "Verify on-call escalation criteria retrieval"
+  },
+  {
+    "id": "Q12",
+    "question": "What 4-step confirmation protocol is required before marking an incident RESOLVED?",
+    "expected_file": "recovery_confirmation.md",
+    "expected_section": "Standard 4-Step Confirmation Protocol",
+    "expected_keywords": ["30 consecutive minutes", "SLO", "ticket decay"],
+    "category": "CONFIRMATION",
+    "purpose": "Verify recovery confirmation checklist retrieval"
+  },
+  {
+    "id": "Q13",
+    "question": "What dynamic jitter interval is recommended during sync pipeline schema mismatches?",
+    "expected_file": "sync_failures.md",
+    "expected_section": "Mitigation Steps",
+    "expected_keywords": ["sync_jitter_interval_ms", "schema", "retry storms"],
+    "category": "SYNC_FAILURE",
+    "purpose": "Verify core sync failure runbook lookup"
+  },
+  {
+    "id": "Q14",
+    "question": "How do we handle intermediate certificate rotation issues on the OAuth proxy?",
+    "expected_file": "authentication_errors.md",
+    "expected_section": "Immediate Diagnostic Checklist",
+    "expected_keywords": ["certificate", "intermediate", "IdP"],
+    "category": "AUTHENTICATION",
+    "purpose": "Verify IdP certificate checklist retrieval"
+  },
+  {
+    "id": "Q15",
+    "question": "How to scale batch decompression worker pods during peak customer upload spikes?",
+    "expected_file": "payload_timeout_guide.md",
+    "expected_section": "Mitigation Steps",
+    "expected_keywords": ["scale", "decompression", "workers"],
+    "category": "TIMEOUT",
+    "purpose": "Verify horizontal scaling guidance"
+  },
+  {
+    "id": "Q16",
+    "question": "What BLE MTU chunk size should be enforced on the gateway for IoT telemetry?",
+    "expected_file": "firmware_update_failures.md",
+    "expected_section": "Mitigation Steps",
+    "expected_keywords": ["128 bytes", "chunk", "BLE"],
+    "category": "FIRMWARE",
+    "purpose": "Verify specific MTU parameter retrieval"
+  },
+  {
+    "id": "Q17",
+    "question": "What communication cadence is mandated for SEV1 platform incidents?",
+    "expected_file": "escalation_criteria.md",
+    "expected_section": "Communication Cadence",
+    "expected_keywords": ["15 minutes", "SEV1", "status"],
+    "category": "ESCALATION",
+    "purpose": "Verify communication cadence retrieval"
+  },
+  {
+    "id": "Q18",
+    "question": "What is the threshold for declaring a major platform outage based on sync success rate?",
+    "expected_file": "escalation_criteria.md",
+    "expected_section": "Quantitative Escalation Triggers",
+    "expected_keywords": ["85%", "outage", "escalation"],
+    "category": "ESCALATION",
+    "purpose": "Verify quantitative outage threshold lookup"
+  },
+  {
+    "id": "Q19",
+    "question": "How does the pipeline prevent future timestamp clock skew violations?",
+    "expected_file": "data_quality_failures.md",
+    "expected_section": "Immediate Diagnostic Checklist",
+    "expected_keywords": ["future", "clock skew", "tolerance"],
+    "category": "DATA_QUALITY",
+    "purpose": "Verify clock skew governance rule lookup"
+  },
+  {
+    "id": "Q20",
+    "question": "How to verify that repeat failure rates have returned to normal after recovery?",
+    "expected_file": "sync_failures.md",
+    "expected_section": "Verification & Recovery Confirmation",
+    "expected_keywords": ["repeat_failure_rate", "2.0%", "verification"],
+    "category": "CONFIRMATION",
+    "purpose": "Verify repeat failure recovery metric"
+  },
+  {
+    "id": "Q21",
+    "question": "What busy timeout configuration should be added to SQLite connections to prevent lock timeouts?",
+    "expected_file": "database_connection_issues.md",
+    "expected_section": "Mitigation Steps",
+    "expected_keywords": ["busy_timeout", "10000", "PRAGMA"],
+    "category": "DATABASE",
+    "purpose": "Verify SQLite busy timeout parameter retrieval"
+  },
+  {
+    "id": "Q22",
+    "question": "How should non-critical sync traffic be shed when mobile carrier retry storms occur?",
+    "expected_file": "retry_storms.md",
+    "expected_section": "Mitigation Steps",
+    "expected_keywords": ["shed", "background", "priority"],
+    "category": "RETRY_STORM",
+    "purpose": "Verify load shedding recommendation"
+  },
+  {
+    "id": "Q23",
+    "question": "What post-incident review requirement is triggered following a SEV1 incident resolution?",
+    "expected_file": "escalation_criteria.md",
+    "expected_section": "Post-Incident Review (PIR) Protocol",
+    "expected_keywords": ["48 hours", "blameless", "PIR"],
+    "category": "GOVERNANCE",
+    "purpose": "Verify PIR timeline governance retrieval"
+  },
+  {
+    "id": "Q24",
+    "question": "How do we inspect protobuf schema field deprecation drops on edge gateway parsers?",
+    "expected_file": "sync_failures.md",
+    "expected_section": "Immediate Diagnostic Checklist",
+    "expected_keywords": ["schema", "protobuf", "gateway"],
+    "category": "SYNC_FAILURE",
+    "purpose": "Verify protobuf schema diagnostic procedure"
+  },
+  {
+    "id": "Q25",
+    "question": "What metric stability duration is required before transitioning from mitigated to resolved?",
+    "expected_file": "recovery_confirmation.md",
+    "expected_section": "Standard 4-Step Confirmation Protocol",
+    "expected_keywords": ["30 consecutive minutes", "SLO", "stability"],
+    "category": "CONFIRMATION",
+    "purpose": "Verify 30-minute metric stability requirement"
+  }
+]

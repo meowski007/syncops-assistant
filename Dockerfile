@@ -21,11 +21,15 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# Copy application source code, runbooks, and scripts
+# Copy application source code, runbooks, pipelines, models, and scripts
 COPY app/ ./app/
+COPY pipeline/ ./pipeline/
+COPY forecasting/ ./forecasting/
 COPY dashboard/ ./dashboard/
 COPY runbooks/ ./runbooks/
+COPY reports/ ./reports/
 COPY scripts/ ./scripts/
+COPY DATA_GOVERNANCE.md .
 COPY pytest.ini .
 
 # Create volume mount point for SQLite database persistence

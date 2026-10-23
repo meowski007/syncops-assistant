@@ -3,12 +3,14 @@ SyncOps Assistant - FastAPI Core Application.
 REST API for customer-experience reliability KPIs, incident investigation, and Prometheus telemetry.
 """
 
+import json
+import sqlite3
 import time
 import uuid
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import FastAPI, HTTPException, Query, Request, Response, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -35,8 +37,15 @@ from app.schemas import (
     IncidentDetail,
     TriageRequest,
     TriageResult,
+    RagTriageRequest,
+    ForecastResponse,
+    DataQualitySummary,
 )
 from app.triage.agent import triage_incident
+from app.triage.rag.answer import generate_rag_triage, RagTriageResult
+from forecasting.service import get_forecast_data
+from pipeline.load import init_pipeline_schema
+from pipeline.report import init_dq_schema
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -205,6 +214,123 @@ def post_triage(request: TriageRequest):
         force_fallback=request.force_fallback
     )
     return result
+
+@app.post("/triage/rag", response_model=RagTriageResult, tags=["Triage & RAG"])
+def post_rag_triage(request: RagTriageRequest):
+    """
+    Runs grounded RAG incident investigation combining structured database facts
+    with vector-retrieved operational runbook evidence and refusal guardrails.
+    """
+    result = generate_rag_triage(
+        incident_id=request.incident_id,
+        query=request.query,
+        min_score=request.min_score,
+        top_k=request.top_k
+    )
+    return result
+
+@app.get("/forecast", response_model=ForecastResponse, tags=["Forecasting"])
+def get_forecast(
+    target: Annotated[str, Query(description="Forecast target: 'failure_rate' or 'incident_volume'")] = "failure_rate",
+    horizon: Annotated[int, Query(description="Forecast horizon in days (1-14)", ge=1, le=14)] = 7,
+    model: Annotated[str, Query(description="Model architecture: 'auto', 'naive', 'seasonal_naive', 'exponential_smoothing'")] = "auto"
+):
+    """
+    Returns time-series point predictions, empirical prediction intervals,
+    and validation metrics with strict temporal backtesting (no data leakage).
+    """
+    if target not in ("failure_rate", "incident_volume"):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="target must be either 'failure_rate' or 'incident_volume'."
+        )
+    return get_forecast_data(target=target, horizon=horizon, model_name=model)
+
+@app.get("/data-quality", response_model=DataQualitySummary, tags=["Data Quality & Governance"])
+def get_data_quality():
+    """Returns the latest data quality audit report and governance enforcement status."""
+    db_path = get_db_path()
+    init_dq_schema(db_path)
+    conn = sqlite3.connect(str(db_path))
+    conn.row_factory = sqlite3.Row
+    try:
+        row = conn.execute(
+            "SELECT * FROM data_quality_reports ORDER BY created_at DESC LIMIT 1"
+        ).fetchone()
+        if not row:
+            return DataQualitySummary(
+                status="NO_RUNS_YET",
+                last_run_id=None,
+                created_at=None,
+                total_records=0,
+                accepted_records=0,
+                rejected_records=0,
+                warning_count=0
+            )
+        return DataQualitySummary(
+            status=row["status"],
+            last_run_id=row["run_id"],
+            created_at=row["created_at"],
+            total_records=row["total_records"],
+            accepted_records=row["accepted_records"],
+            rejected_records=row["rejected_records"],
+            warning_count=row["warning_count"],
+            rejection_breakdown=json.loads(row["rejection_breakdown_json"]),
+            warning_breakdown=json.loads(row["warning_breakdown_json"]),
+            report_markdown_path=row["report_markdown_path"]
+        )
+    finally:
+        conn.close()
+
+@app.get("/data-quality/runs", tags=["Data Quality & Governance"])
+def get_data_quality_runs(limit: Annotated[int, Query(ge=1, le=50)] = 20):
+    """Returns historical list of pipeline runs with row counts and execution status."""
+    db_path = get_db_path()
+    init_pipeline_schema(db_path)
+    conn = sqlite3.connect(str(db_path))
+    conn.row_factory = sqlite3.Row
+    try:
+        rows = conn.execute(
+            "SELECT run_id, start_time, finish_time, status, source, rows_extracted, rows_accepted, rows_rejected, rows_inserted, rows_skipped_duplicates, error_summary FROM pipeline_runs ORDER BY start_time DESC LIMIT ?",
+            (limit,)
+        ).fetchall()
+        return [dict(r) for r in rows]
+    finally:
+        conn.close()
+
+@app.get("/data-quality/runs/{run_id}", tags=["Data Quality & Governance"])
+def get_data_quality_run_detail(run_id: str):
+    """Returns detailed audit report and rejected record breakdown for a specific pipeline run."""
+    db_path = get_db_path()
+    init_pipeline_schema(db_path)
+    init_dq_schema(db_path)
+    conn = sqlite3.connect(str(db_path))
+    conn.row_factory = sqlite3.Row
+    try:
+        run_row = conn.execute(
+            "SELECT * FROM pipeline_runs WHERE run_id = ?",
+            (run_id,)
+        ).fetchone()
+        if not run_row:
+            raise HTTPException(status_code=404, detail=f"Pipeline run '{run_id}' not found.")
+
+        dq_row = conn.execute(
+            "SELECT * FROM data_quality_reports WHERE run_id = ?",
+            (run_id,)
+        ).fetchone()
+
+        rejections = conn.execute(
+            "SELECT record_identifier, raw_data, rejection_reason, rejected_at FROM pipeline_rejected_records WHERE run_id = ? LIMIT 50",
+            (run_id,)
+        ).fetchall()
+
+        return {
+            "run": dict(run_row),
+            "quality_report": dict(dq_row) if dq_row else None,
+            "sample_rejections": [dict(rej) for rej in rejections]
+        }
+    finally:
+        conn.close()
 
 @app.get("/metrics", tags=["Observability"])
 def get_metrics():

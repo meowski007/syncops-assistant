@@ -1,0 +1,733 @@
+{
+  "timestamp": "2026-10-23T19:51:58.262813+00:00",
+  "evaluation_dataset_size": 25,
+  "config_a": {
+    "config_name": "config_a_small_chunks",
+    "chunk_size": 300,
+    "chunk_overlap": 50,
+    "total_queries": 25,
+    "hit_rate_at_1": 80.0,
+    "hit_rate_at_3": 88.0,
+    "hit_rate_at_5": 96.0,
+    "mrr": 0.858,
+    "query_evaluations": [
+      {
+        "id": "Q01",
+        "query": "How do we handle OAuth token expiration surges and JWKS leaf certificate rotation?",
+        "expected_file": "authentication_errors.md",
+        "retrieved_files": [
+          "authentication_errors.md",
+          "authentication_errors.md",
+          "authentication_errors.md",
+          "elevated_incident_volume.md",
+          "authentication_errors.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q02",
+        "query": "What is the procedure when sync payloads time out after 5,000ms on client batch uploads?",
+        "expected_file": "payload_timeout_guide.md",
+        "retrieved_files": [
+          "payload_timeout_guide.md",
+          "delayed_event_processing.md",
+          "database_connection_issues.md",
+          "recovery_confirmation.md",
+          "payload_timeout_guide.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q03",
+        "query": "How to resolve BLE firmware buffer truncation and MTU negotiation failures on IoT devices?",
+        "expected_file": "firmware_update_failures.md",
+        "retrieved_files": [
+          "firmware_update_failures.md",
+          "firmware_update_failures.md",
+          "firmware_update_failures.md",
+          "firmware_update_failures.md",
+          "firmware_update_failures.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q04",
+        "query": "What mitigation is recommended for client retry storms causing HTTP 429 surges?",
+        "expected_file": "retry_storms.md",
+        "retrieved_files": [
+          "retry_storms.md",
+          "sync_failures.md",
+          "retry_storms.md",
+          "elevated_incident_volume.md",
+          "sync_failures.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q05",
+        "query": "How do we deduplicate synchronization events and handle client UUID collisions?",
+        "expected_file": "duplicate_events.md",
+        "retrieved_files": [
+          "duplicate_events.md",
+          "duplicate_events.md",
+          "sync_failures.md",
+          "duplicate_events.md",
+          "authentication_errors.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q06",
+        "query": "What steps should be taken when consumer lag exceeds 15 minutes on the ingestion pipeline?",
+        "expected_file": "delayed_event_processing.md",
+        "retrieved_files": [
+          "delayed_event_processing.md",
+          "delayed_event_processing.md",
+          "delayed_event_processing.md",
+          "delayed_event_processing.md",
+          "escalation_criteria.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q07",
+        "query": "How to diagnose SQLite database is locked operational errors and transaction pool starvation?",
+        "expected_file": "database_connection_issues.md",
+        "retrieved_files": [
+          "database_connection_issues.md",
+          "database_connection_issues.md",
+          "database_connection_issues.md",
+          "payload_timeout_guide.md",
+          "sync_failures.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q08",
+        "query": "What is the procedure when dead-letter queue rejection records spike beyond 1000 messages?",
+        "expected_file": "queue_backlog.md",
+        "retrieved_files": [
+          "queue_backlog.md",
+          "queue_backlog.md",
+          "queue_backlog.md",
+          "queue_backlog.md",
+          "queue_backlog.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q09",
+        "query": "When three or more SEV1 incidents occur simultaneously, what circuit breakers are activated?",
+        "expected_file": "elevated_incident_volume.md",
+        "retrieved_files": [
+          "elevated_incident_volume.md",
+          "escalation_criteria.md",
+          "elevated_incident_volume.md",
+          "elevated_incident_volume.md",
+          "escalation_criteria.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q10",
+        "query": "How do we investigate blocking schema validation failures in the ETL pipeline?",
+        "expected_file": "data_quality_failures.md",
+        "retrieved_files": [
+          "data_quality_failures.md",
+          "queue_backlog.md",
+          "data_quality_failures.md",
+          "data_quality_failures.md",
+          "data_quality_failures.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q11",
+        "query": "What are the quantitative criteria to escalate an incident to the senior SRE on-call lead?",
+        "expected_file": "escalation_criteria.md",
+        "retrieved_files": [
+          "escalation_criteria.md",
+          "elevated_incident_volume.md",
+          "escalation_criteria.md",
+          "elevated_incident_volume.md",
+          "recovery_confirmation.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q12",
+        "query": "What 4-step confirmation protocol is required before marking an incident RESOLVED?",
+        "expected_file": "recovery_confirmation.md",
+        "retrieved_files": [
+          "recovery_confirmation.md",
+          "recovery_confirmation.md",
+          "firmware_update_failures.md",
+          "elevated_incident_volume.md",
+          "escalation_criteria.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q13",
+        "query": "What dynamic jitter interval is recommended during sync pipeline schema mismatches?",
+        "expected_file": "sync_failures.md",
+        "retrieved_files": [
+          "retry_storms.md",
+          "retry_storms.md",
+          "firmware_update_failures.md",
+          "data_quality_failures.md",
+          "sync_failures.md"
+        ],
+        "rank": 5,
+        "reciprocal_rank": 0.2
+      },
+      {
+        "id": "Q14",
+        "query": "How do we handle intermediate certificate rotation issues on the OAuth proxy?",
+        "expected_file": "authentication_errors.md",
+        "retrieved_files": [
+          "authentication_errors.md",
+          "authentication_errors.md",
+          "duplicate_events.md",
+          "elevated_incident_volume.md",
+          "elevated_incident_volume.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q15",
+        "query": "How to scale batch decompression worker pods during peak customer upload spikes?",
+        "expected_file": "payload_timeout_guide.md",
+        "retrieved_files": [
+          "queue_backlog.md",
+          "delayed_event_processing.md",
+          "recovery_confirmation.md",
+          "payload_timeout_guide.md",
+          "sync_failures.md"
+        ],
+        "rank": 4,
+        "reciprocal_rank": 0.25
+      },
+      {
+        "id": "Q16",
+        "query": "What BLE MTU chunk size should be enforced on the gateway for IoT telemetry?",
+        "expected_file": "firmware_update_failures.md",
+        "retrieved_files": [
+          "delayed_event_processing.md",
+          "firmware_update_failures.md",
+          "firmware_update_failures.md",
+          "firmware_update_failures.md",
+          "firmware_update_failures.md"
+        ],
+        "rank": 2,
+        "reciprocal_rank": 0.5
+      },
+      {
+        "id": "Q17",
+        "query": "What communication cadence is mandated for SEV1 platform incidents?",
+        "expected_file": "escalation_criteria.md",
+        "retrieved_files": [
+          "escalation_criteria.md",
+          "escalation_criteria.md",
+          "elevated_incident_volume.md",
+          "escalation_criteria.md",
+          "elevated_incident_volume.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q18",
+        "query": "What is the threshold for declaring a major platform outage based on sync success rate?",
+        "expected_file": "escalation_criteria.md",
+        "retrieved_files": [
+          "escalation_criteria.md",
+          "escalation_criteria.md",
+          "retry_storms.md",
+          "sync_failures.md",
+          "firmware_update_failures.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q19",
+        "query": "How does the pipeline prevent future timestamp clock skew violations?",
+        "expected_file": "data_quality_failures.md",
+        "retrieved_files": [
+          "data_quality_failures.md",
+          "authentication_errors.md",
+          "data_quality_failures.md",
+          "queue_backlog.md",
+          "delayed_event_processing.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q20",
+        "query": "How to verify that repeat failure rates have returned to normal after recovery?",
+        "expected_file": "sync_failures.md",
+        "retrieved_files": [
+          "recovery_confirmation.md",
+          "retry_storms.md",
+          "authentication_errors.md",
+          "recovery_confirmation.md",
+          "elevated_incident_volume.md"
+        ],
+        "rank": 0,
+        "reciprocal_rank": 0.0
+      },
+      {
+        "id": "Q21",
+        "query": "What busy timeout configuration should be added to SQLite connections to prevent lock timeouts?",
+        "expected_file": "database_connection_issues.md",
+        "retrieved_files": [
+          "database_connection_issues.md",
+          "database_connection_issues.md",
+          "queue_backlog.md",
+          "payload_timeout_guide.md",
+          "database_connection_issues.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q22",
+        "query": "How should non-critical sync traffic be shed when mobile carrier retry storms occur?",
+        "expected_file": "retry_storms.md",
+        "retrieved_files": [
+          "retry_storms.md",
+          "sync_failures.md",
+          "duplicate_events.md",
+          "database_connection_issues.md",
+          "duplicate_events.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q23",
+        "query": "What post-incident review requirement is triggered following a SEV1 incident resolution?",
+        "expected_file": "escalation_criteria.md",
+        "retrieved_files": [
+          "escalation_criteria.md",
+          "recovery_confirmation.md",
+          "elevated_incident_volume.md",
+          "elevated_incident_volume.md",
+          "elevated_incident_volume.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q24",
+        "query": "How do we inspect protobuf schema field deprecation drops on edge gateway parsers?",
+        "expected_file": "sync_failures.md",
+        "retrieved_files": [
+          "sync_failures.md",
+          "retry_storms.md",
+          "sync_failures.md",
+          "sync_failures.md",
+          "data_quality_failures.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q25",
+        "query": "What metric stability duration is required before transitioning from mitigated to resolved?",
+        "expected_file": "recovery_confirmation.md",
+        "retrieved_files": [
+          "escalation_criteria.md",
+          "recovery_confirmation.md",
+          "recovery_confirmation.md",
+          "elevated_incident_volume.md",
+          "escalation_criteria.md"
+        ],
+        "rank": 2,
+        "reciprocal_rank": 0.5
+      }
+    ]
+  },
+  "config_b": {
+    "config_name": "config_b_large_chunks",
+    "chunk_size": 600,
+    "chunk_overlap": 100,
+    "total_queries": 25,
+    "hit_rate_at_1": 84.0,
+    "hit_rate_at_3": 88.0,
+    "hit_rate_at_5": 96.0,
+    "mrr": 0.88,
+    "query_evaluations": [
+      {
+        "id": "Q01",
+        "query": "How do we handle OAuth token expiration surges and JWKS leaf certificate rotation?",
+        "expected_file": "authentication_errors.md",
+        "retrieved_files": [
+          "authentication_errors.md",
+          "authentication_errors.md",
+          "elevated_incident_volume.md",
+          "authentication_errors.md",
+          "authentication_errors.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q02",
+        "query": "What is the procedure when sync payloads time out after 5,000ms on client batch uploads?",
+        "expected_file": "payload_timeout_guide.md",
+        "retrieved_files": [
+          "payload_timeout_guide.md",
+          "delayed_event_processing.md",
+          "database_connection_issues.md",
+          "recovery_confirmation.md",
+          "recovery_confirmation.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q03",
+        "query": "How to resolve BLE firmware buffer truncation and MTU negotiation failures on IoT devices?",
+        "expected_file": "firmware_update_failures.md",
+        "retrieved_files": [
+          "firmware_update_failures.md",
+          "firmware_update_failures.md",
+          "firmware_update_failures.md",
+          "firmware_update_failures.md",
+          "firmware_update_failures.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q04",
+        "query": "What mitigation is recommended for client retry storms causing HTTP 429 surges?",
+        "expected_file": "retry_storms.md",
+        "retrieved_files": [
+          "retry_storms.md",
+          "sync_failures.md",
+          "retry_storms.md",
+          "elevated_incident_volume.md",
+          "sync_failures.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q05",
+        "query": "How do we deduplicate synchronization events and handle client UUID collisions?",
+        "expected_file": "duplicate_events.md",
+        "retrieved_files": [
+          "duplicate_events.md",
+          "duplicate_events.md",
+          "sync_failures.md",
+          "duplicate_events.md",
+          "authentication_errors.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q06",
+        "query": "What steps should be taken when consumer lag exceeds 15 minutes on the ingestion pipeline?",
+        "expected_file": "delayed_event_processing.md",
+        "retrieved_files": [
+          "delayed_event_processing.md",
+          "delayed_event_processing.md",
+          "delayed_event_processing.md",
+          "delayed_event_processing.md",
+          "escalation_criteria.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q07",
+        "query": "How to diagnose SQLite database is locked operational errors and transaction pool starvation?",
+        "expected_file": "database_connection_issues.md",
+        "retrieved_files": [
+          "database_connection_issues.md",
+          "database_connection_issues.md",
+          "database_connection_issues.md",
+          "database_connection_issues.md",
+          "delayed_event_processing.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q08",
+        "query": "What is the procedure when dead-letter queue rejection records spike beyond 1000 messages?",
+        "expected_file": "queue_backlog.md",
+        "retrieved_files": [
+          "queue_backlog.md",
+          "queue_backlog.md",
+          "queue_backlog.md",
+          "queue_backlog.md",
+          "queue_backlog.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q09",
+        "query": "When three or more SEV1 incidents occur simultaneously, what circuit breakers are activated?",
+        "expected_file": "elevated_incident_volume.md",
+        "retrieved_files": [
+          "elevated_incident_volume.md",
+          "escalation_criteria.md",
+          "elevated_incident_volume.md",
+          "elevated_incident_volume.md",
+          "escalation_criteria.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q10",
+        "query": "How do we investigate blocking schema validation failures in the ETL pipeline?",
+        "expected_file": "data_quality_failures.md",
+        "retrieved_files": [
+          "data_quality_failures.md",
+          "data_quality_failures.md",
+          "queue_backlog.md",
+          "data_quality_failures.md",
+          "sync_failures.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q11",
+        "query": "What are the quantitative criteria to escalate an incident to the senior SRE on-call lead?",
+        "expected_file": "escalation_criteria.md",
+        "retrieved_files": [
+          "escalation_criteria.md",
+          "escalation_criteria.md",
+          "elevated_incident_volume.md",
+          "recovery_confirmation.md",
+          "escalation_criteria.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q12",
+        "query": "What 4-step confirmation protocol is required before marking an incident RESOLVED?",
+        "expected_file": "recovery_confirmation.md",
+        "retrieved_files": [
+          "recovery_confirmation.md",
+          "recovery_confirmation.md",
+          "firmware_update_failures.md",
+          "elevated_incident_volume.md",
+          "escalation_criteria.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q13",
+        "query": "What dynamic jitter interval is recommended during sync pipeline schema mismatches?",
+        "expected_file": "sync_failures.md",
+        "retrieved_files": [
+          "firmware_update_failures.md",
+          "retry_storms.md",
+          "retry_storms.md",
+          "sync_failures.md",
+          "data_quality_failures.md"
+        ],
+        "rank": 4,
+        "reciprocal_rank": 0.25
+      },
+      {
+        "id": "Q14",
+        "query": "How do we handle intermediate certificate rotation issues on the OAuth proxy?",
+        "expected_file": "authentication_errors.md",
+        "retrieved_files": [
+          "authentication_errors.md",
+          "duplicate_events.md",
+          "elevated_incident_volume.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q15",
+        "query": "How to scale batch decompression worker pods during peak customer upload spikes?",
+        "expected_file": "payload_timeout_guide.md",
+        "retrieved_files": [
+          "queue_backlog.md",
+          "delayed_event_processing.md",
+          "recovery_confirmation.md",
+          "payload_timeout_guide.md",
+          "payload_timeout_guide.md"
+        ],
+        "rank": 4,
+        "reciprocal_rank": 0.25
+      },
+      {
+        "id": "Q16",
+        "query": "What BLE MTU chunk size should be enforced on the gateway for IoT telemetry?",
+        "expected_file": "firmware_update_failures.md",
+        "retrieved_files": [
+          "delayed_event_processing.md",
+          "firmware_update_failures.md",
+          "firmware_update_failures.md",
+          "firmware_update_failures.md",
+          "firmware_update_failures.md"
+        ],
+        "rank": 2,
+        "reciprocal_rank": 0.5
+      },
+      {
+        "id": "Q17",
+        "query": "What communication cadence is mandated for SEV1 platform incidents?",
+        "expected_file": "escalation_criteria.md",
+        "retrieved_files": [
+          "escalation_criteria.md",
+          "elevated_incident_volume.md",
+          "escalation_criteria.md",
+          "elevated_incident_volume.md",
+          "elevated_incident_volume.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q18",
+        "query": "What is the threshold for declaring a major platform outage based on sync success rate?",
+        "expected_file": "escalation_criteria.md",
+        "retrieved_files": [
+          "escalation_criteria.md",
+          "retry_storms.md",
+          "sync_failures.md",
+          "firmware_update_failures.md",
+          "payload_timeout_guide.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q19",
+        "query": "How does the pipeline prevent future timestamp clock skew violations?",
+        "expected_file": "data_quality_failures.md",
+        "retrieved_files": [
+          "data_quality_failures.md",
+          "authentication_errors.md",
+          "data_quality_failures.md",
+          "delayed_event_processing.md",
+          "data_quality_failures.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q20",
+        "query": "How to verify that repeat failure rates have returned to normal after recovery?",
+        "expected_file": "sync_failures.md",
+        "retrieved_files": [
+          "recovery_confirmation.md",
+          "retry_storms.md",
+          "authentication_errors.md",
+          "recovery_confirmation.md",
+          "elevated_incident_volume.md"
+        ],
+        "rank": 0,
+        "reciprocal_rank": 0.0
+      },
+      {
+        "id": "Q21",
+        "query": "What busy timeout configuration should be added to SQLite connections to prevent lock timeouts?",
+        "expected_file": "database_connection_issues.md",
+        "retrieved_files": [
+          "database_connection_issues.md",
+          "database_connection_issues.md",
+          "payload_timeout_guide.md",
+          "payload_timeout_guide.md",
+          "database_connection_issues.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q22",
+        "query": "How should non-critical sync traffic be shed when mobile carrier retry storms occur?",
+        "expected_file": "retry_storms.md",
+        "retrieved_files": [
+          "retry_storms.md",
+          "sync_failures.md",
+          "database_connection_issues.md",
+          "duplicate_events.md",
+          "duplicate_events.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q23",
+        "query": "What post-incident review requirement is triggered following a SEV1 incident resolution?",
+        "expected_file": "escalation_criteria.md",
+        "retrieved_files": [
+          "escalation_criteria.md",
+          "recovery_confirmation.md",
+          "elevated_incident_volume.md",
+          "elevated_incident_volume.md",
+          "elevated_incident_volume.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q24",
+        "query": "How do we inspect protobuf schema field deprecation drops on edge gateway parsers?",
+        "expected_file": "sync_failures.md",
+        "retrieved_files": [
+          "sync_failures.md",
+          "sync_failures.md",
+          "retry_storms.md",
+          "sync_failures.md",
+          "data_quality_failures.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "id": "Q25",
+        "query": "What metric stability duration is required before transitioning from mitigated to resolved?",
+        "expected_file": "recovery_confirmation.md",
+        "retrieved_files": [
+          "recovery_confirmation.md",
+          "recovery_confirmation.md",
+          "elevated_incident_volume.md",
+          "escalation_criteria.md",
+          "delayed_event_processing.md"
+        ],
+        "rank": 1,
+        "reciprocal_rank": 1.0
+      }
+    ]
+  },
+  "answer_groundedness": {
+    "total_queries_evaluated": 25,
+    "citation_presence_rate": 100.0,
+    "citation_validity_rate": 100.0,
+    "keyword_coverage_rate": 68.0,
+    "offline_eval_mode": "DETERMINISTIC_RULE_BASED_VERIFICATION"
+  }
+}
