@@ -35,13 +35,13 @@ flowchart LR
 
 | Failure Category | Primary Runbook | Common Triggers | Recommended Mitigation |
 | :--- | :--- | :--- | :--- |
-| `PAYLOAD_TIMEOUT` | [payload_timeout_guide.md](file:///C:/Users/ASUS/.gemini/antigravity/scratch/syncops-assistant/runbooks/payload_timeout_guide.md) | Client batch upload bursts, decompression buffer saturation | Scale ingress decompression workers; increase gateway timeout buffer to 10s. |
-| `RATE_LIMITED` | [payload_timeout_guide.md](file:///C:/Users/ASUS/.gemini/antigravity/scratch/syncops-assistant/runbooks/payload_timeout_guide.md) | Concurrent enterprise sync or burst traffic exceeding token bucket | Adjust token-bucket refill rate; introduce client exponential retry jitter. |
-| `AUTH_EXPIRED` | [authentication_errors.md](file:///C:/Users/ASUS/.gemini/antigravity/scratch/syncops-assistant/runbooks/authentication_errors.md) | IdP leaf certificate rotation, JWKS cache invalidation | Flush JWKS public key cache; enable temporary 15m clock-skew tolerance. |
-| `FIRMWARE_UNSUPPORTED` | [firmware_update_failures.md](file:///C:/Users/ASUS/.gemini/antigravity/scratch/syncops-assistant/runbooks/firmware_update_failures.md) | BLE packet truncation, device MTU buffer overflow | Pause OTA firmware staging; enforce dynamic 128-byte payload chunking on gateway. |
-| `SCHEMA_MISMATCH` | [sync_failures.md](file:///C:/Users/ASUS/.gemini/antigravity/scratch/syncops-assistant/runbooks/sync_failures.md) | Protobuf/JSON schema field deprecation | Roll back or deploy gateway backward-compatibility translation layer. |
-| `DATABASE_LOCK` | [sync_failures.md](file:///C:/Users/ASUS/.gemini/antigravity/scratch/syncops-assistant/runbooks/sync_failures.md) | Long-running transactions on core sync database shards | Terminate blocking lock processes; optimize indexing on sync_events. |
-| `RECOVERY_CONFIRMATION` | [recovery_confirmation.md](file:///C:/Users/ASUS/.gemini/antigravity/scratch/syncops-assistant/runbooks/recovery_confirmation.md) | Mandated 4-step protocol before closing any incident | Verify 30m SLO stability, cohort parity, support ticket decay, and metrics baseline. |
+| `PAYLOAD_TIMEOUT` | [payload_timeout_guide.md](runbooks/payload_timeout_guide.md) | Client batch upload bursts, decompression buffer saturation | Scale ingress decompression workers; increase gateway timeout buffer to 10s. |
+| `RATE_LIMITED` | [payload_timeout_guide.md](runbooks/payload_timeout_guide.md) | Concurrent enterprise sync or burst traffic exceeding token bucket | Adjust token-bucket refill rate; introduce client exponential retry jitter. |
+| `AUTH_EXPIRED` | [authentication_errors.md](runbooks/authentication_errors.md) | IdP leaf certificate rotation, JWKS cache invalidation | Flush JWKS public key cache; enable temporary 15m clock-skew tolerance. |
+| `FIRMWARE_UNSUPPORTED` | [firmware_update_failures.md](runbooks/firmware_update_failures.md) | BLE packet truncation, device MTU buffer overflow | Pause OTA firmware staging; enforce dynamic 128-byte payload chunking on gateway. |
+| `SCHEMA_MISMATCH` | [sync_failures.md](runbooks/sync_failures.md) | Protobuf/JSON schema field deprecation | Roll back or deploy gateway backward-compatibility translation layer. |
+| `DATABASE_LOCK` | [sync_failures.md](runbooks/sync_failures.md) | Long-running transactions on core sync database shards | Terminate blocking lock processes; optimize indexing on sync_events. |
+| `RECOVERY_CONFIRMATION` | [recovery_confirmation.md](runbooks/recovery_confirmation.md) | Mandated 4-step protocol before closing any incident | Verify 30m SLO stability, cohort parity, support ticket decay, and metrics baseline. |
 
 ---
 

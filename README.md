@@ -3,18 +3,18 @@
 > [!IMPORTANT]
 > ### ⚠️ SYNTHETIC DATA DISCLOSURE
 > **ALL DATA, TELEMETRY, LOGS, INCIDENT IDENTIFIERS, AND METRIC READINGS IN THIS REPOSITORY ARE 100% DETERMINISTICALLY GENERATED SYNTHETIC DATA CREATED FOR EDUCATIONAL RELIABILITY ENGINEERING, DATA PLATFORM, AND AI DEMONSTRATION.**
-> This project is an independent educational portfolio project and does NOT contain real customer data, internal corporate infrastructure, proprietary telemetry, or non-public information from Apple, Noise, or any other commercial organization.
+> This project is an independent educational portfolio project and does NOT contain real customer data, internal corporate infrastructure, proprietary telemetry, or non-public information from Apple, Amgen, Noise, or any other commercial organization.
 
 ---
 
 ## 1. Problem Statement & Motivation
-High-scale consumer synchronization platforms (such as iCloud, Notes, Fitness, or device telemetry sync) process millions of sync events across heterogeneous device fleets (iOS, Android, IoT sensors, web clients). When edge ingestion drops, token invalidation surges, or payload timeouts spike, Site Reliability Engineers (SREs) and Data Platform engineers face severe challenges:
+High-scale consumer synchronization and data ingestion platforms (such as mobile telemetry sync, cloud device synchronization, or enterprise data pipelines) process millions of sync events across heterogeneous device fleets (iOS, Android, IoT sensors, web clients). When edge ingestion drops, token invalidation surges, or payload timeouts spike, Site Reliability Engineers (SREs) and Data Platform engineers face common operational challenges:
 - **Alert Fatigue & Delayed MTTR:** Sifting through raw ingestion errors across millions of records delays mean time to identify and mitigate customer-impacting regressions.
 - **Data Quality & Privacy Gaps:** Raw ingestion logs often contain malformed records, corrupted timestamps, and customer identifiers that violate privacy policies if unmasked.
 - **Reactive Rather Than Predictive Operations:** Teams react to outages after customers complain rather than forecasting metric degradation ahead of time.
 - **Disconnected Runbooks & Hallucinated AI:** Operational mitigation steps remain trapped in static wikis, while ad-hoc generative AI chat tools hallucinate commands and lack grounded retrieval.
 
-**SyncOps Assistant** bridges these gaps by providing an end-to-end, customer-experience reliability platform operating across a verified 4-stage lifecycle:
+**SyncOps Assistant** addresses these challenges through a customer-experience reliability platform operating across a verified 4-stage operational workflow:
 
 $$\text{Detect} \longrightarrow \text{Explain} \longrightarrow \text{Recover} \longrightarrow \text{Confirm}$$
 
@@ -65,7 +65,7 @@ flowchart TD
         STREAMLIT["Streamlit Dashboard (:8501)<br/>(Multi-Tab Observability)"]
         SLACK_REAL["Slack Bolt Bot (Socket Mode)"]
         SLACK_MOCK["Slack Mock Runner (CLI)"]
-        PROMETHEUS["Prometheus & Grafana Scraper"]
+        PROMETHEUS["Prometheus / Metrics Scraper"]
     end
 
     RAW --> DQ
@@ -109,9 +109,9 @@ flowchart TD
 | **Grounded RAG** | `app/triage/rag/`, `runbooks/` | Scikit-Learn (TF-IDF), Cosine Sim | Section-aware chunking of 13 Markdown runbooks, sublinear TF-IDF retrieval, citation mapping, and low-relevance refusal guardrail. |
 | **RAG Evaluation** | `evaluation/` | Python, JSON Benchmark | Offline 25-query evaluation suite computing MRR, Hit@1, Hit@3, Hit@5, and citation validity over different chunk sizes. |
 | **REST API** | `app/main.py`, `app/schemas.py` | FastAPI, Pydantic v2 | Single source of truth exposing `/health`, `/kpis`, `/incidents`, `/metrics`, `/data-quality`, `/forecast`, and `/triage/rag`. |
-| **React Frontend** | `frontend/` | React 18, Vite, TypeScript | Modern observability web interface with live KPI cards, incident directory, interactive forecast charts, and RAG chat. |
+| **React Frontend** | `frontend/` | React 18, Vite, TypeScript | Observability web interface with live KPI cards, incident directory, interactive forecast charts, and RAG chat. |
 | **Streamlit Dashboard** | `dashboard/app.py` | Streamlit, Plotly | Multi-tab operations cockpit covering Incidents, Forecasts, Data Quality audit runs, and RAG runbook search. |
-| **Slack Integration** | `app/slack/` | Slack Bolt for Python | Production Socket Mode bot and local zero-credential mock runner (`python -m app.slack.mock`). |
+| **Slack Integration** | `app/slack/` | Slack Bolt for Python | Socket Mode bot (for connecting to real Slack workspaces) and local zero-credential mock runner (`python -m app.slack.mock`). |
 | **Observability** | `app/metrics.py`, `app/logging_config.py` | Prometheus Client, JSON Logs | Bounded-cardinality Prometheus metrics and structured JSON access logs with `X-Request-ID` tracing. |
 
 ---
@@ -207,7 +207,7 @@ SyncOps Assistant maintains a strict **zero-regression testing policy**.
 ```text
 ============================= test session starts =============================
 platform win32 -- Python 3.12.10, pytest-8.4.2, pluggy-1.7.0
-rootdir: C:\Users\ASUS\.gemini\antigravity\scratch\syncops-assistant
+rootdir: syncops-assistant
 configfile: pytest.ini
 collected 87 items
 
@@ -233,25 +233,25 @@ tests/test_triage.py ...........            [100%]
 
 ## 7. Data Quality & Governance Summary
 
-SyncOps Assistant implements an enterprise-grade data governance architecture documented in [DATA_GOVERNANCE.md](file:///C:/Users/ASUS/.gemini/antigravity/scratch/syncops-assistant/DATA_GOVERNANCE.md).
+SyncOps Assistant implements a structured data governance framework documented in [DATA_GOVERNANCE.md](DATA_GOVERNANCE.md).
 
 ### Governance Architecture:
 - **Raw Landing Zone:** Immutable append-only `raw_sync_events` table preserves verbatim edge telemetry with idempotency keys.
 - **Blocking Quality Gates:** Records with missing IDs, invalid status values, negative latency or payload size, or future timestamps are quarantined to `pipeline_dead_letter`.
 - **Non-Blocking Warnings:** High latency (>10,000ms), large payload (>5MB), or excessive retries (>3) are flagged without stalling the pipeline.
 - **Cryptographic PII Masking:** Customer IDs (`CUST-0001`) and Device IDs (`DEV-0001`) are transformed into salted HMAC-SHA256 hex tokens (`cust_...`, `dev_...`) before persisting into `clean_sync_events`.
-- **Lineage Tracking:** Every pipeline execution generates an immutable audit record in `pipeline_runs` and produces an automated markdown quality report in `reports/data_quality/`.
+- **Lineage Tracking:** Every pipeline execution generates an immutable audit record in `pipeline_runs` and produces an automated markdown quality report in [reports/data_quality/](reports/data_quality/).
 
 ---
 
 ## 8. Time-Series Forecasting & Backtesting Results
 
-The forecasting subsystem ([forecasting/](file:///C:/Users/ASUS/.gemini/antigravity/scratch/syncops-assistant/forecasting/)) projects future daily failure rates and incident volumes to enable proactive SRE alerting.
+The forecasting subsystem ([forecasting/](forecasting/)) projects future daily failure rates and incident volumes to enable proactive SRE alerting.
 
 ### Backtesting Methodology:
 - Evaluated via strict **chronological walk-forward validation (rolling origin)** with zero future data leakage.
 - Models tested: **Holt-Winters Exponential Smoothing**, **Seasonal Naive (7-day lag)**, and **Naive Baseline (last observed value)**.
-- Full evaluation details are documented in [reports/forecasting/forecast_evaluation_report.md](file:///C:/Users/ASUS/.gemini/antigravity/scratch/syncops-assistant/reports/forecasting/forecast_evaluation_report.md).
+- Full evaluation details are documented in [reports/forecasting/forecast_evaluation_report.md](reports/forecasting/forecast_evaluation_report.md).
 
 ### Actual Evaluation Results:
 
@@ -271,7 +271,7 @@ The forecasting subsystem ([forecasting/](file:///C:/Users/ASUS/.gemini/antigrav
 
 ## 9. Grounded RAG Knowledge Base & Retrieval Evaluation
 
-SyncOps Assistant features a production retrieval-augmented generation engine grounded in 13 operational SRE runbooks ([runbooks/](file:///C:/Users/ASUS/.gemini/antigravity/scratch/syncops-assistant/runbooks/)).
+SyncOps Assistant features a grounded retrieval-augmented generation engine backed by 13 operational SRE runbooks ([runbooks/](runbooks/)).
 
 ### Retrieval Architecture:
 - **Section-Aware Markdown Chunker:** Chunks documents strictly by Markdown headers (`#`, `##`, `###`), preserving complete procedural steps rather than splitting sentences arbitrarily.
@@ -280,7 +280,7 @@ SyncOps Assistant features a production retrieval-augmented generation engine gr
 - **Source Citations:** Every triage answer includes exact runbook filenames, section headings, and snippet references.
 
 ### Offline Evaluation Benchmark (25 Curated SRE Questions):
-Evaluated using [evaluation/rag_evaluator.py](file:///C:/Users/ASUS/.gemini/antigravity/scratch/syncops-assistant/evaluation/rag_evaluator.py) with results saved to [reports/rag/rag_evaluation_report.md](file:///C:/Users/ASUS/.gemini/antigravity/scratch/syncops-assistant/reports/rag/rag_evaluation_report.md):
+Evaluated using [evaluation/rag_evaluator.py](evaluation/rag_evaluator.py) with results saved to [reports/rag/rag_evaluation_report.md](reports/rag/rag_evaluation_report.md):
 
 | Evaluation Metric | Configuration A (Target ~300 Chars) | Configuration B (Target ~600 Chars) |
 | :--- | :--- | :--- |
@@ -318,7 +318,7 @@ SyncOps Assistant provides two distinct operator experiences:
 
 ## 11. Docker & Container Deployment
 
-The complete multi-service stack runs seamlessly in Docker:
+The complete multi-service stack runs in Docker:
 
 ```bash
 docker compose up --build -d
@@ -332,12 +332,12 @@ docker compose up --build -d
 
 ---
 
-## 12. Interview Preparation Guide: Apple Services Engineering SRE / Data Intern
+## 12. Interview Preparation Guide: SRE, AI & Data Platform Roles
 
-Use this section to articulate your design choices, trade-offs, and reliability engineering philosophy during technical interviews.
+Use this section to articulate your design choices, trade-offs, and reliability engineering philosophy during technical interviews for SRE, Data Platform, and AI Operations roles.
 
 ### Q1: "Why did you build an ETL pipeline with logical raw and clean layers instead of writing directly to clean tables?"
-> **Answer:** "In customer synchronization platforms, edge telemetry arrives with varying levels of quality — clock skew, network retries, malformed payloads, or corrupted client timestamps. Writing directly to analytical tables risks corrupting core SLIs.
+> **Answer:** "In telemetry synchronization platforms, edge data arrives with varying levels of quality — clock skew, network retries, malformed payloads, or corrupted client timestamps. Writing directly to analytical tables risks corrupting core SLIs.
 >
 > We implemented a medallion-inspired architecture: `raw_sync_events` is an immutable, append-only landing zone. The `pipeline/validate.py` module enforces 5 blocking quality checks, routing invalid records to a dead-letter quarantine table (`pipeline_dead_letter`) while passing clean data through HMAC-SHA256 PII masking into `clean_sync_events`. This ensures analytical idempotency, protects customer privacy, and enables root-cause auditing on rejected payloads."
 
@@ -359,4 +359,4 @@ Use this section to articulate your design choices, trade-offs, and reliability 
 ---
 
 ## 13. Independent Project & Synthetic Data Disclaimer
-This software is developed independently for educational purposes, portfolio demonstration, and SRE / Data Platform skills evaluation. It is not an official product of Apple, Noise, or any employer. All trademarks and company names are used strictly for context.
+This software is developed independently for educational purposes, portfolio demonstration, and SRE / Data Platform skills evaluation. It is not an official product of Apple, Amgen, Noise, or any employer. All trademarks and company names are used strictly for context.

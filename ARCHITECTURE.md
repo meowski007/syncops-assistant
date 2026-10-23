@@ -51,7 +51,7 @@ flowchart TD
         STREAMLIT["Streamlit Dashboard (:8501)<br/>(Multi-Tab Observability)"]
         SLACK_REAL["Slack Bolt Bot (Socket Mode)"]
         SLACK_MOCK["Slack Mock Runner (CLI)"]
-        PROMETHEUS["Prometheus & Grafana Scraper"]
+        PROMETHEUS["Prometheus / External Metrics Scraper"]
     end
 
     RAW --> DQ
