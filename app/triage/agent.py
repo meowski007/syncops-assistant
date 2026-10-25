@@ -70,7 +70,7 @@ def triage_incident(
                     fn_args = tool_call.function.arguments
                     tool_id = tool_call.id
                     
-                    logger.info(f"LLM invoking tool '{fn_name}'", extra={"args": fn_args})
+                    logger.info(f"LLM invoking tool '{fn_name}'", extra={"tool_args": fn_args})
                     tool_output = execute_tool(fn_name, fn_args, db_path=db_path)
                     
                     messages.append({

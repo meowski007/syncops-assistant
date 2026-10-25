@@ -140,7 +140,7 @@ export const App: React.FC = () => {
       <footer className="footer">
         <div className="footer-content">
           <div>
-            <strong>SyncOps Assistant</strong> — Apple Services Engineering SRE Portfolio Project
+            <strong>SyncOps Assistant</strong> — Customer-Experience Reliability & AI Operations Portfolio Project
           </div>
           <div className="footer-synthetic">
             <span>Synthetic Telemetry: 5,000 Sync Events | 300 Devices</span>

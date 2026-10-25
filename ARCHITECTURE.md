@@ -1,6 +1,6 @@
 # SyncOps Assistant: System Architecture & Technical Design
 
-> **SYNTHETIC DISCLOSURE:** SyncOps Assistant is an independent educational SRE, Data Engineering, and AI Reliability platform. All data, telemetry, customer profiles, and incident scenarios are deterministically generated. No connection or affiliation with Apple or any other commercial enterprise is claimed or implied.
+> **SYNTHETIC DISCLOSURE:** SyncOps Assistant is an independent educational SRE, Data Engineering, and AI Reliability platform. All data, telemetry, customer profiles, and incident scenarios are deterministically generated. No connection or affiliation with any commercial enterprise is claimed or implied.
 
 ---
 

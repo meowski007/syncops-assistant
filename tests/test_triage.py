@@ -81,3 +81,50 @@ def test_triage_incident_forced_fallback(triage_db):
     assert res.incident_id == "INC-2026-1003"
     assert res.analysis_mode == "deterministic_fallback"
     assert res.confidence > 0.5
+
+def test_triage_incident_llm_tool_calling_mocked(triage_db):
+    """
+    Validates that when an OpenAI client is configured, the agent executes
+    the tool-calling loop (calling get_incident_details) and formats a valid TriageResult.
+    """
+    import json
+    from unittest.mock import MagicMock, patch
+
+    mock_client = MagicMock()
+    # Turn 1: Model requests tool execution
+    tc = MagicMock()
+    tc.id = "call_mock_123"
+    tc.function.name = "get_incident_details"
+    tc.function.arguments = json.dumps({"incident_id": "INC-2026-1001"})
+    msg1 = MagicMock()
+    msg1.tool_calls = [tc]
+    msg1.content = None
+    choice1 = MagicMock(message=msg1)
+    resp1 = MagicMock(choices=[choice1])
+
+    # Turn 2: Model returns final structured assessment
+    msg2 = MagicMock()
+    msg2.tool_calls = None
+    msg2.content = json.dumps({
+        "summary": "Triage investigation verified via LLM tool-calling.",
+        "likely_cause": "PAYLOAD_TIMEOUT: Oversized batch payload.",
+        "suggested_next_step": "Scale workers and inspect batch window.",
+        "confidence": 0.95,
+        "evidence": ["High payload latency observed in telemetry."],
+        "runbook_references": ["payload_timeout_guide.md"]
+    })
+    choice2 = MagicMock(message=msg2)
+    resp2 = MagicMock(choices=[choice2])
+
+    mock_client.chat.completions.create.side_effect = [resp1, resp2]
+
+    with patch("app.config.settings.OPENAI_API_KEY", "sk-mock-valid-key-for-test-12345"), \
+         patch("openai.OpenAI", return_value=mock_client):
+        res = triage_incident("INC-2026-1001", db_path=triage_db)
+        assert res.incident_id == "INC-2026-1001"
+        assert res.analysis_mode == "llm_tool_calling"
+        assert res.confidence == 0.95
+        assert res.requires_human_review is True
+        assert "PAYLOAD_TIMEOUT" in res.likely_cause
+        assert mock_client.chat.completions.create.call_count == 2
+
